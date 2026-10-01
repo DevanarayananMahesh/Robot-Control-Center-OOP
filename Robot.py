@@ -11,13 +11,13 @@ class Robot:
 # =============================================================================================================
 
 
-    def __init__(self, name, health, battery, record=[0,0]):
+    def __init__(self, name, health, battery, record=None):
 
         self._name = name
         name_list.append(name)
         self.health = health
         self.battery = battery
-        self._record = record
+        self._record = record if record is not None else [0, 0]
 
 
 # =============================================================================================================
@@ -30,9 +30,6 @@ class Robot:
     @property
     def battery(self):
         return self._battery
-    @property
-    def health(self):
-        return self._health
 
     @battery.setter
     def battery(self, value):
@@ -40,10 +37,16 @@ class Robot:
             self._battery = value
         else:
             raise ValueError("Battery must be between 0 and 100.")
+
+
+    @property
+    def health(self):
+        return self._health
+    
     @health.setter
     def health(self, value):
         if 0 <= value <= 100:
-            self._battery = value
+            self._health = value
         else:
             raise ValueError("Health must be between 0 and 100.")
 
@@ -138,22 +141,25 @@ class Robot:
 # =============================================================================================================   
 
             
-    def perform_move(self, move, opponent):
+    def perform_move(self, net_move, opponent):
 
-        if move[0] == "Heal":
+        if net_move[0] == "Heal":
             
-            self.health += 5 * move[1]
-            self.battery -= 1
+            self.health += 5 * net_move[1]
+            if net_move[1] in [0, 0.25, 0.5]:
+                self.battery -= 0
+            else:
+                self.battery -= 1
 
-        elif move[0] == "Uppercut":
+        elif net_move[0] == "Uppercut":
 
-            opponent.health -= 10 * move[1]
-            self.battery -= 10 * move[1]
+            opponent.health -= (10 * net_move[1])*net_move[2]
+            self.battery -= 10 * net_move[1]
 
         else:
 
-            opponent.health -= 5 * move[1]
-            self.battery -= 1 * move[1]
+            opponent.health -= 5 * net_move[1]
+            self.battery -= 1 * net_move[1]
 
 
 # =============================================================================================================

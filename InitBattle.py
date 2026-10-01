@@ -7,6 +7,12 @@ class Battle:
         self._robot1 = robot1
         self._robot2 =robot2
 
+
+    def net_result_(self, move, reaction):
+
+        if reaction in [0, .25, .5, .75, 1]:
+            return [move[0], move[1], reaction]
+
     def start(self):
 
         while self._robot1.is_alive() and self._robot2.is_alive():
@@ -20,12 +26,15 @@ class Battle:
 
 
             move = self._robot1.choose_move(self._robot2)
+            reaction = self._robot2.react_move(move)
+
+            net_result = self.net_result_(move, reaction)
 
             print(f"{self._robot1._name} uses {move[0]}")
             print(self._robot1._name, "has", self._robot1._health, "health")
             print(f"\n")
 
-            self._robot1.perform_move(move, self._robot2)
+            self._robot1.perform_move(net_result, self._robot2)
 
             if not self._robot2.is_alive():
                 break
@@ -40,12 +49,16 @@ class Battle:
 
 
             move = self._robot2.choose_move(self._robot1)
+            reaction = self._robot1.react_move(move)
 
+            net_result = self.net_result_(move, reaction)
+
+            
             print(self._robot2._name, "uses", move[0])
             print(self._robot2._name, "has", self._robot2._health, "health")
             print(f"\n")
 
-            self._robot2.perform_move(move, self._robot1)
+            self._robot2.perform_move(net_result, self._robot1)
 
             time.sleep(1.3) 
         
